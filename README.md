@@ -18,7 +18,7 @@
 
    let actions = [cancel,action0,action1]
    
-   let alert = WFAlertController(title: "test title", message: "test message", actions: actions)
+   let alert = WFAlertController(title: "test title", message: "test message", style: WFAlertStyle.ActionSheet, actions: actions)
    
    alert.show(self)
         
