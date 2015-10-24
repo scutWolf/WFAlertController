@@ -2,6 +2,12 @@
 
 ###How to use: 
 
+###You need to save it as property, or it would be auto-release, in which delegate method would not called
+
+```swift 
+    var alert:WFAlertController?
+```
+###Usage:
 ```swift
 
    let cancel = WFAlertAction(title: "cancel", style: WFAlertActionStyle.Cancel, handler:  {
@@ -18,9 +24,9 @@
 
    let actions = [cancel,action0,action1]
    
-   let alert = WFAlertController(title: "test title", message: "test message", style: WFAlertStyle.Alert, actions: actions)
+   self.alert = WFAlertController(title: "test title", message: "test message", style: WFAlertStyle.Alert, actions: actions)
    
-   alert.show(self)
+   self.alert?.show(self)
         
 ```
 
