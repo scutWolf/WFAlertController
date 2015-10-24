@@ -12,11 +12,11 @@ enum WFAlertStyle{
     
     case Alert
     case ActionSheet
-    
+
 }
 
 enum WFAlertActionStyle{
-    
+
     case Cancel
     case Default
     case Destructive
@@ -25,7 +25,7 @@ enum WFAlertActionStyle{
 
 
 class WFAlertAction{
-    
+
     var title:String?
     var style:WFAlertActionStyle
     var handler:(() -> Void)?
@@ -38,7 +38,7 @@ class WFAlertAction{
         
     }
     
-    
+
 }
 
 
@@ -46,12 +46,12 @@ class WFAlertAction{
 class WFAlertController: NSObject,UIAlertViewDelegate,UIActionSheetDelegate {
     
     private var actions:[WFAlertAction]?
-    //    private var handlers:[(() -> Void)?]?
+//    private var handlers:[(() -> Void)?]?
     private var showHandler:((controller:UIViewController)->Void)?
-    //    private var alertView:UIAlertView?
+//    private var alertView:UIAlertView?
     
     private var orderedActions:[WFAlertAction]?
-    
+
     init(title:String?,message:String?,style:WFAlertStyle,actions:[WFAlertAction]){
         
         super.init()
@@ -62,7 +62,7 @@ class WFAlertController: NSObject,UIAlertViewDelegate,UIActionSheetDelegate {
             
             print("ios 8")
             
-            
+
             var alertStyle:UIAlertControllerStyle = UIAlertControllerStyle.Alert
             
             switch style{
@@ -75,7 +75,7 @@ class WFAlertController: NSObject,UIAlertViewDelegate,UIActionSheetDelegate {
             let alert = UIAlertController(title: title, message: message, preferredStyle: alertStyle)
             
             for action in actions{
-                
+
                 var actionStyle:UIAlertActionStyle?
                 
                 switch action.style{
@@ -90,17 +90,17 @@ class WFAlertController: NSObject,UIAlertViewDelegate,UIActionSheetDelegate {
                 
                 
                 let alertAction = UIAlertAction(title: action.title, style: actionStyle!, handler: { (uiaction:UIAlertAction) -> Void in
-                    
+                  
                     action.handler?()
-                    
+
                 })
                 
                 alert.addAction(alertAction)
                 
                 self.showHandler = { (controller:UIViewController) -> Void in
-                    
+                
                     controller.presentViewController(alert, animated: true, completion: nil)
-                    
+                
                 }
                 
             }
@@ -111,42 +111,43 @@ class WFAlertController: NSObject,UIAlertViewDelegate,UIActionSheetDelegate {
         }
         else{
             //what's in pre ios 7
-            //
+//            
             print("ios 7")
             
             if style == WFAlertStyle.Alert{
-                
-                self.orderedActions = self.actions
+            
+                self.orderedActions = []
                 
                 var cancel:WFAlertAction?
-                
+
                 for index in 0..<actions.count {
                     let action = actions[index]
                     if action.style == WFAlertActionStyle.Cancel{
                         cancel = action
-                        //                        self.handlers?.append(cancel!.handler)
-                        self.orderedActions?.removeAtIndex(index)
+//                        self.handlers?.append(cancel!.handler)
+//                        self.orderedActions?.removeAtIndex(index)
                         self.orderedActions?.insert(action, atIndex: 0)
                         
                     }
-                    
-                }
                 
+                }
+
                 let alertView = UIAlertView(title: title, message: message, delegate: self, cancelButtonTitle: cancel?.title)
                 
-                
+
                 
                 for index in 0..<actions.count {
-                    
+                
                     let action = actions[index]
                     
                     if action.style == WFAlertActionStyle.Cancel{
-                        
+
                         
                     }
                     else{
                         alertView.addButtonWithTitle(action.title)
-                        self.orderedActions?.insert(action, atIndex: 0)
+//                        self.orderedActions?.insert(action, atIndex: 0)
+                        self.orderedActions?.append(action)
                     }
                     
                     
@@ -160,21 +161,21 @@ class WFAlertController: NSObject,UIAlertViewDelegate,UIActionSheetDelegate {
             }
                 
             else if style == WFAlertStyle.ActionSheet{
-                
+
                 var cancelIndex = -1
                 var descructiveIndex = -1
                 
                 var cancel:WFAlertAction?
                 var destructive:WFAlertAction?
-                
+
                 for index in 0..<actions.count {
                     let action = actions[index]
                     if action.style == WFAlertActionStyle.Cancel{
                         cancel = action
-                        //                        //                        self.handlers?.append(cancel!.handler)
-                        //                        self.orderedActions?.removeAtIndex(index)
-                        //                        self.orderedActions?.insert(action, atIndex: 0)
-                        
+//                        //                        self.handlers?.append(cancel!.handler)
+//                        self.orderedActions?.removeAtIndex(index)
+//                        self.orderedActions?.insert(action, atIndex: 0)
+
                         cancelIndex = index
                     }
                     
@@ -190,7 +191,7 @@ class WFAlertController: NSObject,UIAlertViewDelegate,UIActionSheetDelegate {
                 self.orderedActions = []
                 
                 if(cancelIndex>=0){
-                    
+                
                     self.orderedActions!.append(self.actions![cancelIndex])
                     
                 }
@@ -200,17 +201,17 @@ class WFAlertController: NSObject,UIAlertViewDelegate,UIActionSheetDelegate {
                     self.orderedActions!.append(self.actions![descructiveIndex])
                     
                 }
-                
+
                 
                 let actionSheet = UIActionSheet(title: title, delegate: self, cancelButtonTitle: cancel?.title, destructiveButtonTitle: destructive?.title)
-                
+            
                 for action in actions{
                     if action.style == WFAlertActionStyle.Cancel || action.style == WFAlertActionStyle.Destructive{
                         
                     }
                     else{
                         actionSheet.addButtonWithTitle(action.title)
-                        //                        self.handlers?.append(action.handler)
+//                        self.handlers?.append(action.handler)
                         self.orderedActions?.append(action)
                         
                     }
@@ -224,35 +225,35 @@ class WFAlertController: NSObject,UIAlertViewDelegate,UIActionSheetDelegate {
             }
             
         }
-        
+    
     }
     
     func show(controller:UIViewController){
-        
+    
         self.showHandler?(controller: controller)
-        
+    
     }
     
     func alertView(alertView: UIAlertView, clickedButtonAtIndex buttonIndex: Int) {
         
         if let actions = self.orderedActions{
-            
-            for action in actions{
-                
+        
+            if buttonIndex < actions.count {
+                let action = actions[buttonIndex]
                 action.handler?()
-                
             }
+        
         }
     }
     
     func actionSheet(actionSheet: UIActionSheet, clickedButtonAtIndex buttonIndex: Int) {
         if let actions = self.orderedActions{
             
-            for action in actions{
-                
+            if buttonIndex < actions.count {
+                let action = actions[buttonIndex]
                 action.handler?()
-                
             }
+            
         }
     }
     
