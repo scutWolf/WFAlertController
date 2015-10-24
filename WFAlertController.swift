@@ -124,10 +124,8 @@ class WFAlertController: NSObject,UIAlertViewDelegate,UIActionSheetDelegate {
                     let action = actions[index]
                     if action.style == WFAlertActionStyle.Cancel{
                         cancel = action
-//                        self.handlers?.append(cancel!.handler)
-//                        self.orderedActions?.removeAtIndex(index)
                         self.orderedActions?.insert(action, atIndex: 0)
-                        
+                        break
                     }
                 
                 }
@@ -146,7 +144,6 @@ class WFAlertController: NSObject,UIAlertViewDelegate,UIActionSheetDelegate {
                     }
                     else{
                         alertView.addButtonWithTitle(action.title)
-//                        self.orderedActions?.insert(action, atIndex: 0)
                         self.orderedActions?.append(action)
                     }
                     
@@ -172,21 +169,22 @@ class WFAlertController: NSObject,UIAlertViewDelegate,UIActionSheetDelegate {
                     let action = actions[index]
                     if action.style == WFAlertActionStyle.Cancel{
                         cancel = action
-//                        //                        self.handlers?.append(cancel!.handler)
-//                        self.orderedActions?.removeAtIndex(index)
-//                        self.orderedActions?.insert(action, atIndex: 0)
-
                         cancelIndex = index
-                    }
-                    
-                    if action.style == WFAlertActionStyle.Destructive{
-                        destructive = action
-                        //                        self.handlers?.append(destructive!.handler)
-                        //                        break;
-                        descructiveIndex = index
+                        break
                     }
                     
                 }
+                
+                for index in 0..<actions.count {
+                    let action = actions[index]
+                    if action.style == WFAlertActionStyle.Destructive{
+                        destructive = action
+                        descructiveIndex = index
+                        break
+                    }
+                }
+                
+
                 
                 self.orderedActions = []
                 
@@ -211,9 +209,7 @@ class WFAlertController: NSObject,UIAlertViewDelegate,UIActionSheetDelegate {
                     }
                     else{
                         actionSheet.addButtonWithTitle(action.title)
-//                        self.handlers?.append(action.handler)
                         self.orderedActions?.append(action)
-                        
                     }
                 }
                 
@@ -247,6 +243,7 @@ class WFAlertController: NSObject,UIAlertViewDelegate,UIActionSheetDelegate {
     }
     
     func actionSheet(actionSheet: UIActionSheet, clickedButtonAtIndex buttonIndex: Int) {
+        
         if let actions = self.orderedActions{
             
             if buttonIndex < actions.count {
